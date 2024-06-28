@@ -1,0 +1,193 @@
+1. Write a query to select employees and their corresponding managers and their salaries
+
+mysql> select e.employee_id AS EmployeeID,
+    -> e.first_name AS EmployeeFirstName,
+    -> e.last_name AS EmployeeLastName,
+    -> e.salary AS EmployeeSalary,
+    -> m.employee_id AS ManagerID,
+    -> m.first_name AS ManagerFirstName,
+    ->  m.last_name AS ManagerLastName,
+    -> m.salary AS ManagerSalary
+    -> from  employee e left join employee m ON e.manager_id = m.employee_id;
++------------+-------------------+------------------+----------------+-----------+------------------+-----------------+---------------+
+| EmployeeID | EmployeeFirstName | EmployeeLastName | EmployeeSalary | ManagerID | ManagerFirstName | ManagerLastName | ManagerSalary |
++------------+-------------------+------------------+----------------+-----------+------------------+-----------------+---------------+
+|        100 | Steven            | King             |          24000 |      NULL | NULL             | NULL            |          NULL |
+|        101 | Neena             | Kochhar          |          17000 |       100 | Steven           | King            |         24000 |
+|        102 | Lex               | De Haan          |          17000 |       100 | Steven           | King            |         24000 |
+|        103 | Alexander         | Hunold           |           9000 |       102 | Lex              | De Haan         |         17000 |
+|        104 | Bruce             | Ernst            |           6000 |       103 | Alexander        | Hunold          |          9000 |
+|        105 | David             | Austin           |           4800 |       103 | Alexander        | Hunold          |          9000 |
+|        106 | Valli             | Pataballa        |           4800 |       103 | Alexander        | Hunold          |          9000 |
+|        107 | Diana             | Lorentz          |           4200 |       103 | Alexander        | Hunold          |          9000 |
+|        108 | Nancy             | Greenberg        |          12000 |       101 | Neena            | Kochhar         |         17000 |
+|        109 | Daniel            | Faviet           |           9000 |       108 | Nancy            | Greenberg       |         12000 |
+|        110 | John              | Chen             |           8200 |       108 | Nancy            | Greenberg       |         12000 |
+|        111 | Ismael            | Sciarra          |           7700 |       108 | Nancy            | Greenberg       |         12000 |
+|        112 | Jose Manuel       | Urman            |           7800 |       108 | Nancy            | Greenberg       |         12000 |
+|        113 | Luis              | Popp             |           6900 |       108 | Nancy            | Greenberg       |         12000 |
+|        114 | Den               | Raphaely         |          11000 |       100 | Steven           | King            |         24000 |
+|        115 | Alexander         | Khoo             |           3100 |       114 | Den              | Raphaely        |         11000 |
+|        116 | Shelli            | Baida            |           2900 |       114 | Den              | Raphaely        |         11000 |
+|        117 | Sigal             | Tobias           |           2800 |       114 | Den              | Raphaely        |         11000 |
+|        118 | Guy               | Himuro           |           2600 |       114 | Den              | Raphaely        |         11000 |
+|        119 | Karen             | Colmenares       |           2500 |       114 | Den              | Raphaely        |         11000 |
+|        120 | Matthew           | Weiss            |           8000 |       100 | Steven           | King            |         24000 |
+|        121 | Adam              | Fripp            |           8200 |       100 | Steven           | King            |         24000 |
+|        122 | Payam             | Kaufling         |           7900 |       100 | Steven           | King            |         24000 |
+|        123 | Shanta            | Vollman          |           6500 |       100 | Steven           | King            |         24000 |
+|        124 | Kevin             | Mourgos          |           5800 |       100 | Steven           | King            |         24000 |
+|        125 | Julia             | Nayer            |           3200 |       120 | Matthew          | Weiss           |          8000 |
+|        126 | Irene             | Mikkilineni      |           2700 |       120 | Matthew          | Weiss           |          8000 |
+|        127 | James             | Landry           |           2400 |       120 | Matthew          | Weiss           |          8000 |
+|        128 | Steven            | Markle           |           2200 |       120 | Matthew          | Weiss           |          8000 |
+|        129 | Laura             | Bissot           |           3300 |       121 | Adam             | Fripp           |          8200 |
+|        130 | Mozhe             | Atkinson         |           2800 |       121 | Adam             | Fripp           |          8200 |
++------------+-------------------+------------------+----------------+-----------+------------------+-----------------+---------------+
+31 rows in set (0.00 sec)
+
+
+2. Write a query to show count of employees under each manager in descending order
+
+
+mysql> select  m.employee_id AS ManagerID,
+    ->   m.first_name AS ManagerFirstName,
+    -> m.last_name AS ManagerLastName,
+    ->  COUNT(e.employee_id) AS EmployeeCount
+    -> from employee e inner join employee m on e.manager_id=m.employee_id
+    -> group by  m.employee_id, m.first_name, m.last_name
+    -> order by EmployeeCount desc;
++-----------+------------------+-----------------+---------------+
+| ManagerID | ManagerFirstName | ManagerLastName | EmployeeCount |
++-----------+------------------+-----------------+---------------+
+|       100 | Steven           | King            |             8 |
+|       108 | Nancy            | Greenberg       |             5 |
+|       114 | Den              | Raphaely        |             5 |
+|       103 | Alexander        | Hunold          |             4 |
+|       120 | Matthew          | Weiss           |             4 |
+|       121 | Adam             | Fripp           |             2 |
+|       102 | Lex              | De Haan         |             1 |
+|       101 | Neena            | Kochhar         |             1 |
++-----------+------------------+-----------------+---------------+
+
+3. Find the count of employees in each department
+
+
+mysql> select  d.department_id AS DepartmentID,
+    -> d.department_name AS DepartmentName,
+    -> COUNT(e.employee_id) AS EmployeeCount
+    -> from employee e inner join departments d ON e.department_id = d.department_id
+    -> group by d.department_id, d.department_name
+    -> ;
++--------------+----------------------+---------------+
+| DepartmentID | DepartmentName       | EmployeeCount |
++--------------+----------------------+---------------+
+|           20 | Marketing            |             2 |
+|           30 | Purchasing           |             3 |
+|           40 | Human Resources      |             3 |
+|           50 | Shipping             |             7 |
+|           60 | IT                   |             4 |
+|           70 | Public Relations     |             1 |
+|           80 | Sales                |             2 |
+|           90 | Executive            |             1 |
+|          100 | Finance              |             1 |
+|          110 | Accounting           |             1 |
+|          130 | Corporate Tax        |             1 |
+|          140 | Control And Credit   |             1 |
+|          150 | Shareholder Services |             1 |
+|          160 | Benefits             |             1 |
+|          170 | Payroll              |             2 |
++--------------+----------------------+---------------+
+
+4. Write an SQL query to display employees who earn more than the average salary in that company
+
+mysql> select employee_id,
+    -> first_name,
+    -> last_name,
+    -> salary
+    -> from employee
+    -> where   salary > (SELECT AVG(salary) FROM employee);
++-------------+-------------+-----------+--------+
+| employee_id | first_name  | last_name | salary |
++-------------+-------------+-----------+--------+
+|         100 | Steven      | King      |  24000 |
+|         101 | Neena       | Kochhar   |  17000 |
+|         102 | Lex         | De Haan   |  17000 |
+|         103 | Alexander   | Hunold    |   9000 |
+|         108 | Nancy       | Greenberg |  12000 |
+|         109 | Daniel      | Faviet    |   9000 |
+|         110 | John        | Chen      |   8200 |
+|         111 | Ismael      | Sciarra   |   7700 |
+|         112 | Jose Manuel | Urman     |   7800 |
+|         114 | Den         | Raphaely  |  11000 |
+|         120 | Matthew     | Weiss     |   8000 |
+|         121 | Adam        | Fripp     |   8200 |
+|         122 | Payam       | Kaufling  |   7900 |
++-------------+-------------+-----------+--------+
+
+5. Find the maximum salary from each department.
+
+mysql> select d.department_id AS DepartmentID,
+    -> d.department_name AS DepartmentName,
+    -> MAX(e.salary) AS MaxSalary
+    -> from employee e inner join departments d ON e.department_id = d.department_id
+    -> group by d.department_id, d.department_name;
++--------------+----------------------+-----------+
+| DepartmentID | DepartmentName       | MaxSalary |
++--------------+----------------------+-----------+
+|           20 | Marketing            |     24000 |
+|           30 | Purchasing           |     17000 |
+|           60 | IT                   |      9000 |
+|           40 | Human Resources      |      7900 |
+|          100 | Finance              |     12000 |
+|          170 | Payroll              |      9000 |
+|          160 | Benefits             |      7700 |
+|          150 | Shareholder Services |      7800 |
+|          140 | Control And Credit   |      6900 |
+|           80 | Sales                |      5800 |
+|           70 | Public Relations     |      2900 |
+|          130 | Corporate Tax        |      2500 |
+|           50 | Shipping             |      8200 |
+|           90 | Executive            |      2400 |
+|          110 | Accounting           |      2800 |
++--------------+----------------------+-----------+
+
+6. Display the managers and the reporting employees who work in different departments
+
+ select   e.employee_id AS EmployeeID,
+    -> e.first_name AS EmployeeFirstName,
+    ->  e.last_name AS EmployeeLastName,
+    ->  e.department_id AS EmployeeDepartmentID,
+    ->  m.employee_id AS ManagerID,
+    ->  m.first_name AS ManagerFirstName,
+    ->  m.last_name AS ManagerLastName,
+    ->  m.department_id AS ManagerDepartmentID
+    -> from  employee e inner join  employee m ON e.manager_id = m.employee_id
+    -> where e.department_id <> m.department_id;
++------------+-------------------+------------------+----------------------+-----------+------------------+-----------------+---------------------+
+| EmployeeID | EmployeeFirstName | EmployeeLastName | EmployeeDepartmentID | ManagerID | ManagerFirstName | ManagerLastName | ManagerDepartmentID |
++------------+-------------------+------------------+----------------------+-----------+------------------+-----------------+---------------------+
+|        102 | Lex               | De Haan          |                   30 |       100 | Steven           | King            |                  20 |
+|        103 | Alexander         | Hunold           |                   60 |       102 | Lex              | De Haan         |                  30 |
+|        106 | Valli             | Pataballa        |                   40 |       103 | Alexander        | Hunold          |                  60 |
+|        107 | Diana             | Lorentz          |                   40 |       103 | Alexander        | Hunold          |                  60 |
+|        108 | Nancy             | Greenberg        |                  100 |       101 | Neena            | Kochhar         |                  20 |
+|        109 | Daniel            | Faviet           |                  170 |       108 | Nancy            | Greenberg       |                 100 |
+|        110 | John              | Chen             |                  170 |       108 | Nancy            | Greenberg       |                 100 |
+|        111 | Ismael            | Sciarra          |                  160 |       108 | Nancy            | Greenberg       |                 100 |
+|        112 | Jose Manuel       | Urman            |                  150 |       108 | Nancy            | Greenberg       |                 100 |
+|        113 | Luis              | Popp             |                  140 |       108 | Nancy            | Greenberg       |                 100 |
+|        114 | Den               | Raphaely         |                   30 |       100 | Steven           | King            |                  20 |
+|        115 | Alexander         | Khoo             |                   80 |       114 | Den              | Raphaely        |                  30 |
+|        116 | Shelli            | Baida            |                   70 |       114 | Den              | Raphaely        |                  30 |
+|        118 | Guy               | Himuro           |                   60 |       114 | Den              | Raphaely        |                  30 |
+|        119 | Karen             | Colmenares       |                  130 |       114 | Den              | Raphaely        |                  30 |
+|        120 | Matthew           | Weiss            |                   50 |       100 | Steven           | King            |                  20 |
+|        121 | Adam              | Fripp            |                   50 |       100 | Steven           | King            |                  20 |
+|        122 | Payam             | Kaufling         |                   40 |       100 | Steven           | King            |                  20 |
+|        123 | Shanta            | Vollman          |                   50 |       100 | Steven           | King            |                  20 |
+|        124 | Kevin             | Mourgos          |                   80 |       100 | Steven           | King            |                  20 |
+|        127 | James             | Landry           |                   90 |       120 | Matthew          | Weiss           |                  50 |
+|        130 | Mozhe             | Atkinson         |                  110 |       121 | Adam             | Fripp           |                  50 |
++------------+-------------------+------------------+----------------------+-----------+------------------+-----------------+---------------------+
+22 rows in set (0.00 sec)
